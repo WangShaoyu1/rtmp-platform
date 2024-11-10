@@ -1,0 +1,11 @@
+{
+  "extends": "./src/.umi/tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,                  // 不生成编译文件
+    "skipLibCheck": true,             // 跳过库文件的类型检查
+    "checkJs": false,                 // 禁用对 JavaScript 的类型检查
+    "noImplicitAny": false,           // 允许隐式的 any 类型
+    "strict": false,                  // 禁用严格模式
+    "allowJs": true                   // 允许编译 JS 文件
+  }
+}

@@ -1,0 +1,31 @@
+.container {
+  padding-top: 80px;
+}
+
+/* 主内容区域 */
+.content {
+  grid-area: content;
+  padding: 100px 20px 20px; /* 距离 header 100px */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* 覆盖 Video.js 的默认样式 */
+.video-js {
+  width: 900px !important;
+  height: 506px !important;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+/* 居中播放按钮 */
+.video-js .vjs-big-play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px; /* 调整按钮大小 */
+  border: none; /* 去掉边框 */
+  background: rgba(0, 0, 0, 0.6); /* 添加背景色，使按钮更明显 */
+  padding: 20px;
+}
