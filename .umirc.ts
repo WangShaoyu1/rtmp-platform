@@ -1,7 +1,10 @@
 import { defineConfig } from '@umijs/max';
 
 export default defineConfig({
-  antd: {},
+  antd: {
+    dark: false,
+    compact: true,
+  },
   access: {},
   model: {},
   initialState: {},
@@ -36,5 +39,11 @@ export default defineConfig({
     },
   ],
   npmClient: 'pnpm',
+  cssLoaderModules: {
+    exportLocalsConvention: 'camelCase',
+  },
+  define: {
+    'process.env': process.env,
+  },
 });
 

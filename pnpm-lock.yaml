@@ -6,7 +6,7 @@ settings:
 
 dependencies:
   '@ant-design/icons':
-    specifier: ^5.0.1
+    specifier: ^5.5.1
     version: 5.5.1(react-dom@18.3.1)(react@18.3.1)
   '@ant-design/pro-components':
     specifier: ^2.8.1
@@ -20,6 +20,9 @@ dependencies:
   axios:
     specifier: ^1.7.7
     version: 1.7.7
+  classnames:
+    specifier: ^2.5.1
+    version: 2.5.1
   install:
     specifier: ^0.13.0
     version: 0.13.0

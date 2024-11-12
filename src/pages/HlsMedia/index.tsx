@@ -1,90 +1,142 @@
-import Guide from '@/components/Guide';
-import { trim } from '@/utils/format';
-import { PageContainer } from '@ant-design/pro-components';
-import {io} from 'socket.io-client';
-import videojs from 'video.js'
-import { useModel } from '@umijs/max';
+import React, { useEffect, useState } from 'react';
+import { Button } from 'antd';
+import { PageContainer, ProCard } from '@ant-design/pro-components';
+import VideoPlayer from '@/pages/HlsMedia/VideoPlayer';
+import TextToSpeech from '@/pages/HlsMedia/TextToSpeech';
+import { io } from 'socket.io-client';
 import styles from './index.less';
 
-const socket = io('http://127.0.0.1:5000/test', {
-  transports: ['websocket'],
-  reconnection: true,
-});
+const HlsMedia: React.FC = () => {
+  const LOCAL_VIDEO_PATH = '/static/y2mate.mp4';
+  const STREAM_URL = '//localhost:8081/hls/test123.m3u8';
 
-const videoPlayer = videojs('videoPlayer');
-const localVideoPath = 'static/sun.mp4';
-const streamUrl = '//localhost:8081/hls/test123.m3u8';
-
-// 切换到推流内容
-function switchToStream(url) {
-  videoPlayer.src({
-    src: url,
-    type: 'application/x-mpegURL',
-  });
-  videoPlayer.load();
-  videoPlayer.play();
-}
-
-// 切换到本地视频
-function switchToLocalVideo() {
-  videoPlayer.src({
-    src: localVideoPath,
+  const [videoSrc, setVideoSrc] = useState({
+    src: LOCAL_VIDEO_PATH,
     type: 'video/mp4',
   });
-  videoPlayer.load();
-  videoPlayer.play();
-}
+  const [width, setWidth] = useState(800);
+  const [height, setHeight] = useState(450);
+  const [ratio, setRatio] = useState(16 / 9);// 宽高比16：9
 
-socket.on('connect', () => {
-  console.log('Socket.IO connected!!');
-});
+  useEffect(() => {
+    // 初始化 Socket.IO 连接
+    const socket = io('http://127.0.0.1:5000/test', {
+      transports: ['websocket'],
+      reconnection: true,
+    });
 
-socket.on('disconnect', () => {
-  console.log('Socket.IO 断开连接，切换到本地视频');
-  switchToLocalVideo();
-});
+    const switchToLocalVideo = () => {
+      setVideoSrc({
+        src: LOCAL_VIDEO_PATH,
+        type: 'video/mp4',
+      });
+    };
 
-socket.on('message', function(data) {
-  console.log(`message-data: ${JSON.stringify(data)}`);
-});
+    const switchToStream = () => {
+      setVideoSrc({
+        src: STREAM_URL,
+        type: 'application/x-mpegURL',
+      });
+    };
 
-// 监听推流信号，start切换推流视频，stop切换本地视频
-socket.on('rtmp', function(data) {
-  console.log(`推理状态: ${data}`);
-  if (data === 'start') {
-    console.log('收到推流信号，切换到推流内容');
-    switchToStream(streamUrl);
-  } else if (data === 'stop') {
-    console.log('收到停止推流信号，切换到本地视频');
-    switchToLocalVideo();
-  }
-});
+    socket.on('connect', () => {
+      console.log('Socket.IO connected!!');
+    });
 
-// 默认播放本地视频
-switchToLocalVideo();
+    socket.on('disconnect', () => {
+      console.log('Socket.IO 断开连接，切换到本地视频');
+      switchToLocalVideo();
+    });
 
-const HomePage: React.FC = () => {
-  const { name } = useModel('global');
+    socket.on('rtmp', function(data) {
+      console.log(`推理状态: ${data}`);
+      if (data === 'start') {
+        console.log('收到推流信号，切换到推流内容');
+        switchToStream(); // 切换到流媒体 URL
+      } else if (data === 'stop') {
+        console.log('收到停止推流信号，切换到本地视频');
+        switchToLocalVideo(); // 切换回本地视频
+      }
+    });
+
+    // 清理 socket 连接
+    return () => {
+      socket.close();
+    };
+  }, [LOCAL_VIDEO_PATH, STREAM_URL]);
+
+  const onTabChange = (key: string) => {
+    console.log(key);
+  };
+
+  const tabItems = [
+    {
+      tab: '音频设置',
+      key: 'audio',
+      children:
+        <>
+          <ProCard>
+            <ProCard colSpan={12}>
+              <TextToSpeech />
+            </ProCard>
+          </ProCard>
+        </>,
+    },
+    {
+      tab: '视频设置',
+      key: 'video',
+      children: <div>视频设置</div>,
+    },
+    {
+      tab: '效果体验',
+      key: 'effect',
+      children:
+        <>
+          <ProCard
+            title={'视频播放器'}
+            extra={<Button>切换视频</Button>}
+            split={'vertical'}
+            bordered={true}
+            headerBordered={true}
+          >
+            <ProCard title={'左侧详情'} colSpan={'40%'}>
+              <div>配置项</div>
+            </ProCard>
+            <ProCard title={'右侧详情'} colSpan={'60%'} layout="center">
+              <VideoPlayer width={width} height={height} videoSrc={videoSrc} />
+            </ProCard>
+
+          </ProCard>
+        </>,
+    },
+  ];
   return (
-    <PageContainer ghost>
+    <PageContainer
+      onTabChange={onTabChange}
+      ghost={false}
+      content="欢迎使用 ProLayout 组件"
+      // tabActiveKey={'video'}
+      tabList={tabItems}
+      extra={[
+        <Button key="3">操作一</Button>,
+        <Button key="2">操作二</Button>,
+        <Button key="1" type="primary">
+          发布
+        </Button>,
+      ]}
+      footer={[
+        <Button key="rest">重置</Button>,
+        <Button key="submit" type="primary">
+          提交
+        </Button>,
+      ]}
+    >
       <div className={styles.container}>
-        <main className="content">
-          <div className="video-container">
-            <video
-              id="videoPlayer"
-              className="video-js vjs-default-skin"
-
-              preload="auto"
-              autoPlay
-              muted>
-              <source id="videoSource" src="static/y2mate.mp4" type="video/mp4" />
-              您的浏览器不支持该视频标签或视频格式。
-            </video>
-          </div>
+        <main>
         </main>
       </div>
     </PageContainer>
   );
 };
 
-export default HomePage;
+export default HlsMedia;
