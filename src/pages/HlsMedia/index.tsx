@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from 'antd';
+import { useModel } from '@umijs/max';
+import { Button, Tag } from 'antd';
 import { PageContainer, ProCard } from '@ant-design/pro-components';
 import VideoPlayer from '@/pages/HlsMedia/VideoPlayer';
 import TextToSpeech from '@/pages/HlsMedia/TextToSpeech';
@@ -14,9 +15,14 @@ const HlsMedia: React.FC = () => {
     src: LOCAL_VIDEO_PATH,
     type: 'video/mp4',
   });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [width, setWidth] = useState(800);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [height, setHeight] = useState(450);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ratio, setRatio] = useState(16 / 9);// 宽高比16：9
+  const { audioLikes, setAudioLikes } = useModel('global');
+
 
   useEffect(() => {
     // 初始化 Socket.IO 连接
@@ -65,19 +71,38 @@ const HlsMedia: React.FC = () => {
     };
   }, [LOCAL_VIDEO_PATH, STREAM_URL]);
 
+  useEffect(() => {
+    localStorage.setItem('audioLikes', JSON.stringify(audioLikes));
+  }, [audioLikes]);
+
+  // tab 切换
   const onTabChange = (key: string) => {
     console.log(key);
   };
 
+  // Tag 删除
+  const onTagClose = (removedTag: string) => {
+    const newTags = audioLikes.filter(tag => tag !== removedTag);
+    setAudioLikes(newTags);
+  };
   const tabItems = [
     {
       tab: '音频设置',
       key: 'audio',
       children:
         <>
-          <ProCard>
-            <ProCard colSpan={12}>
+          <ProCard gutter={8}>
+            <ProCard colSpan={12} bordered>
+              <h1>AI 语音生成器</h1>
               <TextToSpeech />
+            </ProCard>
+            <ProCard colSpan={12} title={'音频收藏'}>
+              <ProCard bordered bodyStyle={{ height: 300 }}>
+                {audioLikes.map(item => <Tag key={item.key}
+                                             onClose={() => onTagClose(item.key)}
+                                             closable>{item.label}</Tag>)
+                }
+              </ProCard>
             </ProCard>
           </ProCard>
         </>,
@@ -122,12 +147,6 @@ const HlsMedia: React.FC = () => {
         <Button key="2">操作二</Button>,
         <Button key="1" type="primary">
           发布
-        </Button>,
-      ]}
-      footer={[
-        <Button key="rest">重置</Button>,
-        <Button key="submit" type="primary">
-          提交
         </Button>,
       ]}
     >

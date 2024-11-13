@@ -10,6 +10,7 @@ import {
 
 // OpenAI tts
 const openaiTTSGen = async ({ text, speaker, speed }) => {
+  const startTime = performance.now();
   const resp = await ky.post(OPENAI_SPEAKER_TTS_API, {
     headers: { Authorization: `Bearer ${API_KEY}` },
     json: {
@@ -20,11 +21,16 @@ const openaiTTSGen = async ({ text, speaker, speed }) => {
     },
     timeout: 10000,
   });
-  return await resp.blob();
+  const endTime = performance.now();
+  return {
+    data: await resp.blob(),
+    apiDuration: Number(((endTime - startTime) / 1000).toFixed(2)),
+  };
 };
 
 // 豆包AI tts
 const moonTTSGen = async ({ text, speaker, speed }) => {
+  const startTime = performance.now();
   const resp = (await ky.post(MOON_SPEAKER_TTS_API, {
     headers: { Authorization: `Bearer ${API_KEY}` },
     json: {
@@ -48,12 +54,17 @@ const moonTTSGen = async ({ text, speaker, speed }) => {
   for (let i = 0; i < binaryString.length; i++) {
     bytes[i] = binaryString.charCodeAt(i);
   }
+  const endTime = performance.now();
 
-  return new Blob([bytes.buffer], { type: 'audio/wav' });
+  return {
+    data: new Blob([bytes.buffer], { type: 'audio/wav' }),
+    apiDuration: Number(((endTime - startTime) / 1000).toFixed(2)),
+  };
 };
 
 // Minimax tts，该公司有一款明星产品 海螺AI
 const miniMaxTTSGen = async ({ text, speaker, speed, ...options }) => {
+  const startTime = performance.now();
   const resp = (await ky.post(`${MINIMAX_TTS_API_HOST}?GroupId=${MINIMAX_GROUPID}`, {
     headers: {
       'Authorization': `Bearer ${MINIMAX_API_KEY}`,
@@ -84,8 +95,11 @@ const miniMaxTTSGen = async ({ text, speaker, speed, ...options }) => {
   for (let i = 0; i < hexData.length; i += 2) {
     byteArray[i / 2] = parseInt(hexData.substr(i, 2), 16);
   }
-
-  return new Blob([byteArray], { type: 'audio/wav' });
+  const endTime = performance.now();
+  return {
+    data: new Blob([byteArray], { type: 'audio/wav' }),
+    apiDuration: Number(((endTime - startTime) / 1000).toFixed(2)),
+  };
 };
 
 export {

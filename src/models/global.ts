@@ -4,9 +4,12 @@ import { useState } from 'react';
 
 const useUser = () => {
   const [name, setName] = useState<string>(DEFAULT_NAME);
+  const [audioLikes, setAudioLikes] = useState(localStorage.getItem('audioLikes') ? JSON.parse(localStorage.getItem('audioLikes') as string) : []);
   return {
     name,
     setName,
+    audioLikes,
+    setAudioLikes,
   };
 };
 
