@@ -3,6 +3,11 @@ let MINIMAX_API_KEY = process.env.UMI_MINIMAX_API_KEY || '';
 let MINIMAX_TTS_API_HOST = process.env.UMI_MINIMAX_TTS_API_HOST || '';
 let MINIMAX_GROUPID = process.env.UMI_MINIMAX_GROUPID || '';
 
+let IFLYTEK_API_ID = process.env.UMI_IFLYTEK_API_ID || '';
+let IFLYTEK_API_SECRET = process.env.UMI_IFLYTEK_API_SECRET || '';
+let IFLYTEK_API_KEY = process.env.UMI_IFLYTEK_API_KEY || '';
+let IFLYTEK_API_HOST = process.env.UMI_IFLYTEK_API_HOST || '';
+
 let openAIBaseURL = 'https://' + process.env.UMI_NEXT_PUBLIC_PROD_API_HOST + '/v1/';
 let transcriptURL = 'https://' + process.env.UMI_NEXT_PUBLIC_PROD_API_HOST + '/302/transcript?url=';
 let OPENAI_AUDIO_TO_TEXT_API = process.env.UMI_NEXT_PUBLIC_PROD_OPENAI_AUDIO_TO_TEXT_API || '';
@@ -31,4 +36,8 @@ export {
   UPLOAD_API,
   openAIBaseURL,
   transcriptURL,
+  IFLYTEK_API_ID,
+  IFLYTEK_API_SECRET,
+  IFLYTEK_API_KEY,
+  IFLYTEK_API_HOST,
 };

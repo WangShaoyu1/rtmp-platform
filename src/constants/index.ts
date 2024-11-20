@@ -6,6 +6,7 @@ export const PLATFORMS = [
   { key: 'Moon', label: 'doubao', value: 'Moon' },
   // { key: 'FishAudio', label: 'FishAudio', value: 'FishAudio' },
   { key: 'Minimax', label: 'Minimax', value: 'Minimax' },
+  { key: 'IFYTEK', label: '讯飞', value: 'IFYTEK' },
 ];
 
 export const OPENAI_SPEAKERS = [
@@ -282,3 +283,12 @@ export const MOON_SPEAKERS = [
     value: 'zh_female_yuanqinvyou_moon_bigtts',
   },
 ];
+
+export const IFYTEK_SPEAKERS = [
+  { key: 'xiaoyan', label: '讯飞小燕', value: 'xiaoyan' },
+  { key: 'aisjiuxu', label: '讯飞许久', value: 'aisjiuxu' },
+  { key: 'aisxping', label: '讯飞小萍', value: 'aisxping' },
+  { key: 'aisjinger', label: '讯飞小婧', value: 'aisjinger' },
+  { key: 'aisbabyxu', label: '讯飞小宝', value: 'aisbabyxu' },
+];
+

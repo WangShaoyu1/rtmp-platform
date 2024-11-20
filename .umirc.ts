@@ -3,7 +3,19 @@ import { defineConfig } from '@umijs/max';
 export default defineConfig({
   antd: {
     dark: false,
-    compact: true,
+    compact: false,
+    import: false,
+    configProvider: {},
+    theme: {
+      token: {
+        fontSize: '14px',
+      },
+      components: {
+        Tag: {
+          colorPrimary: 'yellow',
+        },
+      },
+    },
   },
   access: {},
   model: {},

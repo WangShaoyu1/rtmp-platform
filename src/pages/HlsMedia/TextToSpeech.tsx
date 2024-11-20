@@ -6,10 +6,10 @@ import { useModel } from '@umijs/max';
 import SpeechToSpeech from '@/pages/HlsMedia/SpeechToSpeech';
 import SpeechClone from '@/pages/HlsMedia/SpeechClone';
 import { getAudioDuration } from '@/utils/audio-tools';
-import { openaiTTSGen, moonTTSGen, miniMaxTTSGen } from '@/utils/textToSpeechUtils';
+import { openaiTTSGen, moonTTSGen, miniMaxTTSGen, ifytekTTSGen } from '@/utils/textToSpeechUtils';
 
 const TextToSpeech = () => {
-  const { platforms, openAISpeakers, minMaxSpeakers, moonSpeakers } = useModel('userSpeaker');
+  const { platforms, openAISpeakers, minMaxSpeakers, moonSpeakers, ifytekSpeakers } = useModel('userSpeaker');
   const { audioLikes, setAudioLikes } = useModel('global');
   const [platform, setPlatform] = useState('OpenAI');
   const [speaker, setSpeaker] = useState('alloy');
@@ -27,6 +27,7 @@ const TextToSpeech = () => {
   const speakerOptions = useMemo(() => {
     if (platform === 'OpenAI') return openAISpeakers;
     if (platform === 'Minimax') return minMaxSpeakers;
+    if (platform === 'IFYTEK') return ifytekSpeakers;
     return moonSpeakers;
   }, [platform]);
 
@@ -46,13 +47,20 @@ const TextToSpeech = () => {
       } else if (platform === 'Moon') {
         const result = await moonTTSGen({ text: finalText, speaker, speed });
         ({ data, apiDuration } = result);
-      } else {
+        console.log('Moon-data:', data);
+      } else if (platform === 'Minimax') {
         const result = await miniMaxTTSGen({ text: finalText, speaker, speed });
         ({ data, apiDuration } = result);
+      } else if (platform === 'IFYTEK') {
+        await ifytekTTSGen({
+          text: finalText, speaker, speed, callback: async (result: any) => {
+            ({ data, apiDuration } = result);
+          },
+        });
       }
 
       setLoading(false);
-      if (!data.size) return;
+      if (!data?.size) return;
 
       const url = URL.createObjectURL(data);
       const duration = await getAudioDuration(url);
@@ -77,6 +85,9 @@ const TextToSpeech = () => {
     a.href = audioUrl;
     a.download = `${text?.slice(0, 10) || 'audio'}.mp3`;
     a.click();
+
+    // 释放内存
+    URL.revokeObjectURL(audioUrl);
   }, [audioUrl, text]);
 
   // Slider 标签显示格式化
@@ -98,7 +109,7 @@ const TextToSpeech = () => {
     setAudioLikes([...audioLikes, {
         platform,
         speaker,
-        label: `${platform}_${speakerOptions.find(item => item.value === speaker)?.label}`,
+        label: `${platform}_${speakerOptions.find(({ value }) => value === speaker)?.label}`,
         key: `${platform}_${speaker}`,
         value: `${platform}_${speaker}`,
       }].filter((item, index, arr) => (arr.findIndex(t => t.key === item.key) === index) ||
@@ -113,6 +124,8 @@ const TextToSpeech = () => {
       setSpeaker(minMaxSpeakers[0]?.value);
     } else if (platform === 'Moon') {
       setSpeaker(moonSpeakers[0]?.value);
+    } else if (platform === 'IFYTEK') {
+      setSpeaker(ifytekSpeakers[0]?.value);
     }
   }, [platform]);
 
@@ -184,12 +197,12 @@ const TextToSpeech = () => {
         <ProCard colSpan={24} direction={'column'}>
           <Flex justify="space-between">
             <div>
-              <Tag>音频时长：{audioDuration}s</Tag>
-              <Tag>生成耗时：{genDuration}s</Tag>
+              <Tag style={{ padding: '4px' }}>音频时长：{audioDuration}s</Tag>
+              <Tag style={{ padding: '4px' }}>生成耗时：{genDuration}s</Tag>
             </div>
             <div>
               <Button onClick={handleTextToSpeech} type="primary" loading={loading} disabled={!genBtnStatus}>
-                {loading ? '生成中...' : '生成'}
+                {loading ? '生成中...' : '试听'}
               </Button>
               <Button icon={<DownloadOutlined />} onClick={handleDownload} style={{ marginLeft: 10 }}
                       disabled={!audioUrl}>下载</Button>

@@ -85,6 +85,7 @@ const HlsMedia: React.FC = () => {
     const newTags = audioLikes.filter(tag => tag !== removedTag);
     setAudioLikes(newTags);
   };
+
   const tabItems = [
     {
       tab: '音频设置',
@@ -100,6 +101,7 @@ const HlsMedia: React.FC = () => {
               <ProCard bordered bodyStyle={{ height: 300 }}>
                 {audioLikes.map(item => <Tag key={item.key}
                                              onClose={() => onTagClose(item.key)}
+                                             style={{padding:'4px'}}
                                              closable>{item.label}</Tag>)
                 }
               </ProCard>
