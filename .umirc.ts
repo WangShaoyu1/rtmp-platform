@@ -8,7 +8,7 @@ export default defineConfig({
     configProvider: {},
     theme: {
       token: {
-        fontSize: '14px',
+        // fontSize: '14px',
       },
       components: {
         Tag: {
@@ -22,7 +22,7 @@ export default defineConfig({
   initialState: {},
   request: {},
   layout: {
-    title: '@umijs/max',
+    title: '@umijs/max111',
   },
   routes: [
     {
