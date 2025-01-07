@@ -144,11 +144,11 @@ const TextToSpeech = () => {
       id: Date.now(),
       platform,
       speaker,
-      label: `${platform}_${
+      label: `${platform}-${
         speakerOptions.find(({ value }) => value === speaker)?.label
       }`,
-      key: `${platform}_${speaker}`,
-      value: `${platform}_${speaker}`,
+      key: `${platform}-${speaker}`,
+      value: `${platform}-${speaker}`,
     };
     if (audioLikes.find((data) => data.key === newAudio.key)) {
       message.warning(`${newAudio.key}声音已经存在`);
